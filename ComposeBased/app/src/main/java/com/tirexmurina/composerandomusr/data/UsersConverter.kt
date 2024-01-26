@@ -16,6 +16,7 @@ class UsersConverter {
                         name = it.name,
                         nat = it.nat,
                         picture = it.picture,
+                        location = it.location,
                         seed = seedBuf
                     )
                 )

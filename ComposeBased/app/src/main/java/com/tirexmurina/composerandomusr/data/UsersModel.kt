@@ -13,7 +13,33 @@ data class Result(
     val gender: String,
     val name: Name,
     val nat: String,
+    val location: Location,
     val picture: Picture
+)
+
+data class Location (
+    val street: Street,
+    val city : String,
+    val state : String,
+    val country : String,
+    val postcode : String,
+    val coordinates : Coordinates,
+    val timezone : Timezone
+)
+
+data class Street(
+    val number: String,
+    val name : String
+)
+
+data class Coordinates(
+    val latitude: String,
+    val longitude: String
+)
+
+data class Timezone(
+    val offset : String,
+    val description: String
 )
 
 data class Picture(
