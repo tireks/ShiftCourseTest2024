@@ -10,8 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.tirexmurina.composerandomusr.screen.HomeScreen
 import com.tirexmurina.composerandomusr.ui.theme.ComposeRandomUsrTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,11 +25,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    //Greeting("Android")
+                    RandomUsrApp()
                 }
             }
         }
     }
+
 }
 
 @Composable
@@ -37,6 +42,11 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
+@Composable
+fun RandomUsrApp(){
+    HomeScreen()
+}
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
@@ -44,3 +54,7 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
+//todo новый экран и навигация на него
+
+// todo решить как получать пользователя и сделать его получение при загрузке второго скрина
