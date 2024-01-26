@@ -17,6 +17,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -32,21 +33,52 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.tirexmurina.composerandomusr.domain.entity.User
 import com.tirexmurina.composerandomusr.presentation.HomeViewModel
+import com.tirexmurina.composerandomusr.presentation.HomeViewState
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()
 ){
-    val listOfUsers by remember { viewModel.listOfUsers }
+    /*val listOfUsers by remember { viewModel.listOfUsers }
 
-    /*LazyColumn {
+    *//*LazyColumn {
         items(listOfUsers) { item ->
             SingleUserItem(user = item)
         }
-    }*/
+    }*//*
     
     LazyVerticalGrid(columns = GridCells.Fixed(2)){
         items(listOfUsers) { item ->
             SingleUserItem(user = item)
+        }
+    }*/
+
+    DisposableEffect(key1 = Unit,){
+        viewModel.getUsers()
+        onDispose {}
+    }
+
+    val viewState by remember { viewModel.state }
+    when(val bufState = viewState){
+        is HomeViewState.Content -> {
+            LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+                items(bufState.data) { item ->
+                     SingleUserItem(user = item)
+                }
+            }
+        }
+
+        is HomeViewState.Error -> {
+                Text(text = "Success ${bufState.errorMsg}")
+            // todo хз, тестил отключая инет, еррор не переходит -upd. при кривом запросе выдает ошибку
+        }
+
+        is HomeViewState.Loading -> {
+            Text(text = "Loading")
+            //todo тут ченить сделать
+        }
+
+        else -> {
+
         }
     }
 
