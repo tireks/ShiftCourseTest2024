@@ -1,7 +1,10 @@
 package com.tirexmurina.composerandomusr.screen
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,35 +37,46 @@ import coil.compose.rememberAsyncImagePainter
 import com.tirexmurina.composerandomusr.domain.entity.User
 import com.tirexmurina.composerandomusr.presentation.HomeViewModel
 import com.tirexmurina.composerandomusr.presentation.HomeViewState
+import okhttp3.internal.toHexString
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
+    onItemClick: (String) -> Unit
 ){
     /*val listOfUsers by remember { viewModel.listOfUsers }
+    Log.d("BL", "RECOMPOSED-HOME_SCREEN")
+    Log.d("BL","viewModel ${viewModel.hashCode().toHexString()}")
 
-    *//*LazyColumn {
-        items(listOfUsers) { item ->
-            SingleUserItem(user = item)
-        }
-    }*//*
-    
     LazyVerticalGrid(columns = GridCells.Fixed(2)){
         items(listOfUsers) { item ->
-            SingleUserItem(user = item)
+            SingleUserItem(user = item, onClick = {
+                onItemClick(it)
+            })
         }
     }*/
 
-    DisposableEffect(key1 = Unit,){
+
+    Log.d("BL", "RECOMPOSED-HOME_SCREEN")
+    Log.d("BL","viewModel ${viewModel.hashCode().toHexString()}")
+
+    /*DisposableEffect(key1 = Unit){
+        Log.d("BL", "EXCEPTION")
         viewModel.getUsers()
         onDispose {}
-    }
+    }*/
+
+    //viewModel.getUsers()
 
     val viewState by remember { viewModel.state }
+    //val viewState by viewModel.state
     when(val bufState = viewState){
         is HomeViewState.Content -> {
             LazyVerticalGrid(columns = GridCells.Fixed(2)) {
                 items(bufState.data) { item ->
-                     SingleUserItem(user = item)
+                     SingleUserItem(user = item, onClick = {
+                         onItemClick(it)
+                     })
                 }
             }
         }
@@ -81,18 +95,17 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()
 
         }
     }
-
 }
 
 @Composable
 fun SingleUserItem(
-    user: User
-    //onClick: (String) -> Unit
+    user: User,
+    onClick: (String) -> Unit
 ){
     Card(
         modifier = Modifier
             .padding(8.dp)
-            //.clickable { onClick(user.seed) } // todo пока просто заглушка, передает вверх сид
+            .clickable { onClick(user.id) } // todo пока просто заглушка, передает вверх сид
             .fillMaxWidth(), elevation = CardDefaults.cardElevation(
             defaultElevation = 10.dp
         )
@@ -121,10 +134,14 @@ fun SingleUserItem(
                 .fillMaxWidth()
                 .padding(16.dp)
             ){
-                Column {
+                /*Column {
                     Text(text = user.name.title, fontSize = 18.sp, fontWeight = Medium, fontStyle = Italic)
                     Text(text = user.name.first, fontSize = 24.sp, fontWeight = Bold)
                     Text(text = user.name.last, fontSize = 24.sp, fontWeight = Bold)
+                }*/
+                Column {
+                    Text(text = user.id.substringAfter("|||"), fontSize = 18.sp, fontWeight = Medium, fontStyle = Italic)
+                    Text(text = user.id.substringBefore("|||"), fontSize = 24.sp, fontWeight = Bold)
                 }
             }
         }
