@@ -13,5 +13,5 @@ data class User(
     val nat: String,
     val picture: Picture,
     val location: Location,
-    val seed: String
+    val id: String
 )
