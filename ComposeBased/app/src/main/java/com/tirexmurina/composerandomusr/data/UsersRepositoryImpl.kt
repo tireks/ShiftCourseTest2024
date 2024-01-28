@@ -12,4 +12,7 @@ class UsersRepositoryImpl @Inject constructor(
         return service.getUsers()
     }*/
     override suspend fun getUsers(): List<User> = converter.convert(service.getUsers())
+
+    override suspend fun getUsersBySeed(seedMap: Map<String,String>): List<User> = converter.convert(service.getUsersBySeed(seedMap))
+
 }

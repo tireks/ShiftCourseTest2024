@@ -3,7 +3,9 @@ package com.tirexmurina.composerandomusr.di
 import com.tirexmurina.composerandomusr.data.UsersAPI
 import com.tirexmurina.composerandomusr.data.UsersRepositoryImpl
 import com.tirexmurina.composerandomusr.domain.repository.UsersRepository
+import com.tirexmurina.composerandomusr.domain.usecase.GetUsersBySeedUseCase
 import com.tirexmurina.composerandomusr.domain.usecase.GetUsersUseCase
+import com.tirexmurina.composerandomusr.domain.usecase.IGetUsersBySeedUseCase
 import com.tirexmurina.composerandomusr.domain.usecase.IGetUsersUseCase
 import dagger.Binds
 import dagger.Module
@@ -22,7 +24,7 @@ class AppModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://randomuser.me/api/")  //not sure that it should be there. Maybe in repositoryImplementation?
+            .baseUrl("https://randomuser.me/")  //not sure that it should be there. Maybe in repositoryImplementation?
             //.addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -39,10 +41,14 @@ class AppModule {
     interface AppModuleInt{
         @Binds
         @Singleton
-        fun provideDishesRepository(repository: UsersRepositoryImpl) : UsersRepository
+        fun provideUsersRepository(repository: UsersRepositoryImpl) : UsersRepository
 
         @Binds
         @Singleton
-        fun provideGetDishesUseCase(useCase: GetUsersUseCase) : IGetUsersUseCase
+        fun provideGetUsersUseCase(useCase: GetUsersUseCase) : IGetUsersUseCase
+
+        @Binds
+        @Singleton
+        fun provideGetUsersBySeedUseCase(useCase: GetUsersBySeedUseCase) : IGetUsersBySeedUseCase
     }
 }

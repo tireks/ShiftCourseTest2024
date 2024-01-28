@@ -17,7 +17,7 @@ class UsersConverter {
                         nat = it.nat,
                         picture = it.picture,
                         location = it.location,
-                        seed = seedBuf
+                        id = "$seedBuf|||${tempList.size + 1}" //создаю id внутри приложения, это костыль, но пока это лучший вариант
                     )
                 )
 

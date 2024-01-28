@@ -1,6 +1,7 @@
 package com.tirexmurina.composerandomusr
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,9 +9,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.tirexmurina.composerandomusr.screen.HomeScreen
+import com.tirexmurina.composerandomusr.screen.UserDetailsScreen
 import com.tirexmurina.composerandomusr.ui.theme.ComposeRandomUsrTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,6 +35,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     //Greeting("Android")
                     RandomUsrApp()
+                    Log.d("BL", "CALLING-APP")
                 }
             }
         }
@@ -35,24 +44,37 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Composable
 fun RandomUsrApp(){
-    HomeScreen()
+    //HomeScreen()
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "users"){
+        composable("users") {
+            HomeScreen(onItemClick = { userId ->
+                navController.navigate("user/${userId}")
+            })
+            Log.d("BL", "CALLING-HOME-SCREEn")
+        }
+
+        composable("user/{userId}", arguments = listOf(navArgument("userId"){
+            type = NavType.StringType
+        })) {
+
+            val userId = remember {
+                it.arguments?.getString("userId")
+            }
+            //val userId = it.arguments?.getString("userId")
+            Log.d("BL", "CALLING-USER-SCREEn")
+            UserDetailsScreen(id = userId)
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    ComposeRandomUsrTheme {
+    /*ComposeRandomUsrTheme {
         Greeting("Android")
-    }
+    }*/
 }
 
 //todo новый экран и навигация на него
