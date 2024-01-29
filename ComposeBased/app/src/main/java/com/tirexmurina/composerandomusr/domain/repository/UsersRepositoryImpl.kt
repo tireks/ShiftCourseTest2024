@@ -28,7 +28,7 @@ class UsersRepositoryImpl @Inject constructor(
                     throw Exception()
                 }
                 val hold = converter.convert(service.getUsers())
-                //dao.saveUserList(hold)
+                dao.saveUserList(hold)
                 hold
             } catch (e: Exception){
                 dao.getUserFromDatabase()
