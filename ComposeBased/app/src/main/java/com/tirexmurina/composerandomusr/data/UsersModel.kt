@@ -1,6 +1,7 @@
 package com.tirexmurina.composerandomusr.data
 
 import android.media.Session2Command
+import androidx.room.Embedded
 
 data class UsersModel(
     val info: Info,
@@ -18,13 +19,13 @@ data class Result(
 )
 
 data class Location (
-    val street: Street,
+    @Embedded val street: Street,
     val city : String,
     val state : String,
     val country : String,
     val postcode : String,
-    val coordinates : Coordinates,
-    val timezone : Timezone
+    @Embedded val coordinates : Coordinates,
+    @Embedded val timezone : Timezone
 )
 
 data class Street(
