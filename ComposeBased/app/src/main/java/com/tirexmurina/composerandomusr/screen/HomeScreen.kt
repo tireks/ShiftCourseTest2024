@@ -1,26 +1,30 @@
 package com.tirexmurina.composerandomusr.screen
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -28,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontStyle.Companion.Italic
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.text.font.FontWeight.Companion.Light
 import androidx.compose.ui.text.font.FontWeight.Companion.Medium
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,7 +45,8 @@ import okhttp3.internal.toHexString
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    onRefreshClick: () -> Unit
 ){
     /*val listOfUsers by remember { viewModel.listOfUsers }
     Log.d("BL", "RECOMPOSED-HOME_SCREEN")
@@ -72,14 +76,55 @@ fun HomeScreen(
     //val viewState by viewModel.state
     when(val bufState = viewState){
         is HomeViewState.Content -> {
-            LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-                items(bufState.data) { item ->
-                     SingleUserItem(user = item, onClick = {
-                         onItemClick(it)
-                     })
+            /*Column {
+                LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+                    items(bufState.data) { item ->
+                        SingleUserItem(user = item, onClick = {
+                            onItemClick(it)
+                        })
+                    }
                 }
-            }
+                *//*SmallFloatingActionButton(
+                    onClick = { onClick() },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.secondary
+                ) {
+                    Icon(Icons.Filled.Add, "Small floating action button.")
+                }*//*
+            }*/
+
+            /*Scaffold (
+                floatingActionButton = {
+                    SmallFloatingActionButton(
+                        onClick = { onClick() },
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.secondary
+                    ) {
+                        Icon(Icons.Filled.Add, "Small floating action button.")
+                    }
+                }
+            ){
+                LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+                    items(bufState.data) { item ->
+                        SingleUserItem(user = item, it, onClick = {
+                            onItemClick(it)
+                        })
+                    }
+                }
+            }*/
+
+            HomeScreenContent(
+                listUsers = bufState.data,
+                onItemClick = { onItemClick(it) },
+                onRefreshClick = {
+                    viewModel.clearDb() // todo хз, может есть способ лучше, пока напрямую дергается вьюмоделька
+                    onRefreshClick()
+                }
+            )
         }
+
+
+
 
         is HomeViewState.Error -> {
                 Text(text = "Success ${bufState.errorMsg}")
@@ -97,15 +142,49 @@ fun HomeScreen(
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreenContent(
+    listUsers : List<User>,
+    onItemClick: (String) -> Unit,
+    onRefreshClick: () -> Unit
+){
+    Scaffold (
+        floatingActionButton = {
+            SmallFloatingActionButton(
+                onClick = {
+                    onRefreshClick()
+                    Log.d("BK", "Clearing Table")
+                },
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.secondary
+            ) {
+                Icon(Icons.Filled.Refresh, "Small floating action button.")
+            }
+        }
+    ){
+        LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+            items(listUsers) { item ->
+                SingleUserItem(user = item, it, onItemClick = {
+                    onItemClick(it)
+                })
+            }
+        }
+    }
+}
+
+
 @Composable
 fun SingleUserItem(
     user: User,
-    onClick: (String) -> Unit
+    paddingValues: PaddingValues,
+    onItemClick: (String) -> Unit
 ){
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .clickable { onClick(user.id) } // todo пока просто заглушка, передает вверх сид
+            .clickable { onItemClick(user.id) } // todo пока просто заглушка, передает вверх сид
             .fillMaxWidth(), elevation = CardDefaults.cardElevation(
             defaultElevation = 10.dp
         )

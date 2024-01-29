@@ -1,7 +1,7 @@
-package com.tirexmurina.composerandomusr.data
+package com.tirexmurina.composerandomusr.data.remote
 
+import com.tirexmurina.composerandomusr.data.UsersModel
 import retrofit2.http.GET
-import retrofit2.http.Query
 import retrofit2.http.QueryMap
 
 interface UsersAPI {
