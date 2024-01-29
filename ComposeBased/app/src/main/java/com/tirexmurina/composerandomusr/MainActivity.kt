@@ -49,9 +49,10 @@ fun RandomUsrApp(){
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "users"){
         composable("users") {
-            HomeScreen(onItemClick = { userId ->
-                navController.navigate("user/${userId}")
-            })
+            HomeScreen(
+                onItemClick = { userId -> navController.navigate("user/${userId}") },
+                onRefreshClick = { navController.navigate("users")}
+            )
             Log.d("BL", "CALLING-HOME-SCREEn")
         }
 
