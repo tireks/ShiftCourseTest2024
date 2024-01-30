@@ -1,7 +1,11 @@
 package com.tirexmurina.composerandomusr.screen
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,27 +14,30 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeCompilerApi
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import coil.compose.rememberAsyncImagePainter
-import com.tirexmurina.composerandomusr.R
+import com.tirexmurina.composerandomusr.data.Coordinates
+import com.tirexmurina.composerandomusr.data.Location
+import com.tirexmurina.composerandomusr.data.Name
+import com.tirexmurina.composerandomusr.data.Picture
+import com.tirexmurina.composerandomusr.data.Street
+import com.tirexmurina.composerandomusr.data.Timezone
 import com.tirexmurina.composerandomusr.domain.entity.User
 import com.tirexmurina.composerandomusr.presentation.UserViewModel
 import com.tirexmurina.composerandomusr.presentation.UserViewState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import okhttp3.internal.toHexString
 
 @Composable
@@ -41,7 +48,8 @@ fun UserDetailsScreen(
 
     Log.d("BL", "RECOMPOSED-USER_SCREEN")
     Log.d("BL","viewModel ${viewModel.hashCode().toHexString()}")
-    DisposableEffect(key1 = Unit){
+
+    DisposableEffect(key1 = Unit){//todo мб его отсюда тоже убрать
         if(!id.isNullOrBlank()){
             viewModel.getUserById(id)
         }
@@ -55,7 +63,14 @@ fun UserDetailsScreen(
         }
 
         is UserViewState.Content -> {
-            UserDetailsScreenContent(user = bufState.data)
+            val context = LocalContext.current
+            //val phoneNumber = ""
+            UserDetailsScreenContent(
+                user = bufState.data,
+                onCoordinatesClick = { showMap(context, bufState.data.location.coordinates) },
+                onDialerClick = { dialPhoneNumber(context, bufState.data.cell) },
+                onEmailClick = { emailPerson(context, bufState.data.email) }
+            )
         }
         is UserViewState.Error -> {
             Text(text = "Error ${bufState.errorMsg}")
@@ -68,7 +83,12 @@ fun UserDetailsScreen(
 }
 
 @Composable
-fun UserDetailsScreenContent(user: User){
+fun UserDetailsScreenContent(
+    user: User,
+    onCoordinatesClick: () -> Unit,
+    onDialerClick:() -> Unit,
+    onEmailClick: () -> Unit
+){
     Column {
         Box(modifier = Modifier
             .height(230.dp)
@@ -85,8 +105,8 @@ fun UserDetailsScreenContent(user: User){
             )
         }
         Text (
-            //text = user.name.title,
-            text = user.id.substringAfter("|||"),
+            text = user.name.title,
+            //text = user.id.substringAfter("|||"),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 4.dp, top = 4.dp),
@@ -95,8 +115,8 @@ fun UserDetailsScreenContent(user: User){
             fontStyle = FontStyle.Italic
         )
         Text (
-            //text = user.name.first + " " + user.name.last,
-            text = user.id.substringBefore("|||"),
+            text = user.name.first + " " + user.name.last,
+            //text = user.id.substringBefore("|||"),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 4.dp, top = 4.dp),
@@ -123,7 +143,8 @@ fun UserDetailsScreenContent(user: User){
         Text (
             text = user.email,
             modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
+                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp)
+                .clickable { onEmailClick() },
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -138,7 +159,8 @@ fun UserDetailsScreenContent(user: User){
         Text (
             text = user.cell,
             modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
+                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp)
+                .clickable { onDialerClick() },
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -201,7 +223,9 @@ fun UserDetailsScreenContent(user: User){
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Italic
         )
-        Row(){
+        Row(
+            modifier = Modifier.clickable { onCoordinatesClick() }
+        ){
             Column(modifier = Modifier
                 .padding(start = 16.dp)
             ) {
@@ -244,8 +268,80 @@ fun UserDetailsScreenContent(user: User){
     }
 }
 
+fun showMap(context: Context, geoCoordinates: Coordinates) {
+    val geoLocation =
+        "geo:${geoCoordinates.latitude},${geoCoordinates.longitude}"
+    val geoIntentUri = Uri.parse(geoLocation)
+    val mapIntent = Intent(Intent.ACTION_VIEW, geoIntentUri)
+    mapIntent.setPackage("com.google.android.apps.maps")
+    mapIntent.resolveActivity(context.packageManager)?.let {
+        startActivity(context, mapIntent, null)
+    }
+}
+
+fun dialPhoneNumber(context: Context, phoneNumber: String){
+    val phoneNumberUri = Uri.parse("tel:$phoneNumber")
+    val dialerIntent = Intent(Intent.ACTION_DIAL, phoneNumberUri)
+    Log.d("BK", "TRYING to DIAL")
+    dialerIntent.resolveActivity(context.packageManager)?.let {
+        startActivity(context, dialerIntent, null)
+    }
+}
+
+fun emailPerson(context: Context, email: String) {
+    val emailIntent = Intent(Intent.ACTION_SENDTO).apply { 
+        data = Uri.parse("mailto:")
+        putExtra(Intent.EXTRA_EMAIL, email)
+    }
+    Log.d("BK", "TRYING to DIAL")
+    emailIntent.resolveActivity(context.packageManager)?.let {
+        startActivity(context, emailIntent, null)
+    }
+}
+
+
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewScreen(){
-    //UserDetailsScreen()
+    UserDetailsScreenContent(
+        user = User(
+            name = Name(
+                first = "Louanne",
+                last = "Roger",
+                title = "Ms"
+            ),
+            cell = "06-59-69-07-71",
+            email = "louanne.roger@example.com",
+            gender = "female",
+            id = "2e4cf75fb419897c|||5",
+            picture = Picture(
+                large = "https://randomuser.me/api/portraits/women/65.jpg",
+                medium = "https://randomuser.me/api/portraits/med/women/65.jpg",
+                thumbnail = "https://randomuser.me/api/portraits/thumb/women/65.jpg"
+            ),
+            nat = "BR",
+            location = Location(
+                street = Street(
+                    number = "3423",
+                    name = "Rua São Sebastiao"
+                ),
+                city = "Macapá",
+                state = "Pernambuco",
+                country = "Brazil",
+                postcode = "96927",
+                coordinates = Coordinates(
+                    latitude = "14.4052",
+                    longitude = "160.4737"
+                ),
+                timezone = Timezone(
+                    offset = "+5:30",
+                    description = "Bombay, Calcutta, Madras, New Delhi"
+                )
+            )
+        ),
+        onCoordinatesClick = {},
+        onDialerClick = {},
+        onEmailClick = {}
+    )
 }
