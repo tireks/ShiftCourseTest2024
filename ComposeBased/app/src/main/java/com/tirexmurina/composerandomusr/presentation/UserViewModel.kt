@@ -6,8 +6,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tirexmurina.composerandomusr.domain.usecase.IGetUsersBySeedUseCase
-import com.tirexmurina.composerandomusr.domain.usecase.IGetUsersUseCase
+import com.tirexmurina.composerandomusr.domain.usecase.IGetUserByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
-    val useCase: IGetUsersBySeedUseCase
+    val useCase: IGetUserByIdUseCase
 ) : ViewModel() {
 
     private val _state: MutableState<UserViewState> = mutableStateOf(UserViewState.Initial)
@@ -28,12 +27,10 @@ class UserViewModel @Inject constructor(
 
     fun getUserById(id: String){
         _state.value = UserViewState.Loading
-        val seed = parseSeedFromId(id)
-        val num = parseNumFromId(id)
         viewModelScope.launch {
             try{
-                val listUsers = useCase(getSeedMap(seed))
-                _state.value = UserViewState.Content(listUsers[num-1])
+                val user = useCase(id)
+                _state.value = UserViewState.Content(user)
             }catch (e: Exception){
                 Log.d("BL", "EXCEPTION ${e.message}")
                 _state.value = UserViewState.Error(e.message ?: "Unknown error")
@@ -41,15 +38,18 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    private fun getSeedMap(seed: String): Map<String, String> {
-        return mapOf("results" to "20", "inc" to "gender,name,nat,email,cell,picture,nat,location","seed" to seed)
+
+
+    fun showMap(geoLocationStr: String){
+        /*val geoLocationUri = Uri.parse(geoLocationStr)
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = geoLocationUri
+        }
+        if (intent.resolveActivity(requireActivity().packageManager) != null) {
+            requireActivity().startActivity(intent)
+        }*/
+
     }
 
-    private fun parseSeedFromId(id: String): String {
-        return id.substringBefore("|||")
-    }
 
-    private fun parseNumFromId(id: String): Int {
-        return id.substringAfter("|||").toInt()
-    }
 }

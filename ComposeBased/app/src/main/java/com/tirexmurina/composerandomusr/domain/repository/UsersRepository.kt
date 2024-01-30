@@ -7,8 +7,7 @@ interface UsersRepository {
     suspend fun getUsers() : List<User>
 
     //suspend fun getUsers
-
-    suspend fun getUsersBySeed(seedMap: Map<String, String>) : List<User>
+    suspend fun getUserById(id : String) : User
 
     suspend fun clearDatabase()
 }
