@@ -22,4 +22,9 @@ interface UserDao {
     @Query("SELECT COUNT(*) FROM user_table")
     suspend fun getTableSize() : Int
 
+    @Query("SELECT * FROM user_table WHERE id = :id")
+    suspend fun getUserById(id: String) : User
+
+    @Query("SELECT EXISTS (SELECT 1 FROM user_table WHERE id = :id)")
+    suspend fun containsUserWithId(id : String) : Boolean
 }

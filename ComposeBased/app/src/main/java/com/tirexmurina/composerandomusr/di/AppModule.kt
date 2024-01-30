@@ -4,10 +4,10 @@ import com.tirexmurina.composerandomusr.data.remote.UsersAPI
 import com.tirexmurina.composerandomusr.domain.repository.UsersRepositoryImpl
 import com.tirexmurina.composerandomusr.domain.repository.UsersRepository
 import com.tirexmurina.composerandomusr.domain.usecase.ClearDatabaseUseCase
-import com.tirexmurina.composerandomusr.domain.usecase.GetUsersBySeedUseCase
+import com.tirexmurina.composerandomusr.domain.usecase.GetUserByIdUseCase
 import com.tirexmurina.composerandomusr.domain.usecase.GetUsersUseCase
 import com.tirexmurina.composerandomusr.domain.usecase.IClearDatabaseUseCase
-import com.tirexmurina.composerandomusr.domain.usecase.IGetUsersBySeedUseCase
+import com.tirexmurina.composerandomusr.domain.usecase.IGetUserByIdUseCase
 import com.tirexmurina.composerandomusr.domain.usecase.IGetUsersUseCase
 import dagger.Binds
 import dagger.Module
@@ -59,7 +59,7 @@ class AppModule {
 
         @Binds
         @Singleton
-        fun provideGetUsersBySeedUseCase(useCase: GetUsersBySeedUseCase) : IGetUsersBySeedUseCase
+        fun provideGetUsersBySeedUseCase(useCase: GetUserByIdUseCase) : IGetUserByIdUseCase
 
         @Binds
         @Singleton
