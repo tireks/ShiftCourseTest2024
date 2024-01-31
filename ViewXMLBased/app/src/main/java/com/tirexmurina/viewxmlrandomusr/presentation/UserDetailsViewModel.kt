@@ -7,12 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tirexmurina.viewxmlrandomusr.domain.usecase.IClearDatabaseUseCase
 import com.tirexmurina.viewxmlrandomusr.domain.usecase.IGetUsersUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
-class HomeViewModel @Inject constructor(
+class UserDetailsViewModel @Inject constructor(
     val getUsersUseCase: IGetUsersUseCase,
     val clearDatabaseUseCase: IClearDatabaseUseCase
 ) : ViewModel() {
