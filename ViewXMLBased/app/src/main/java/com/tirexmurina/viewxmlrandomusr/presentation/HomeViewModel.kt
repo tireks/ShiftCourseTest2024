@@ -1,8 +1,7 @@
 package com.tirexmurina.viewxmlrandomusr.presentation
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tirexmurina.viewxmlrandomusr.domain.usecase.IClearDatabaseUseCase
@@ -17,8 +16,8 @@ class HomeViewModel @Inject constructor(
     val clearDatabaseUseCase: IClearDatabaseUseCase
 ) : ViewModel() {
 
-    private val _state: MutableState<HomeViewState> = mutableStateOf(HomeViewState.Initial)
-    val state: State<HomeViewState> = _state
+    private val _state = MutableLiveData<HomeViewState>(HomeViewState.Initial)
+    val state: LiveData<HomeViewState> = _state
 
 
     init {

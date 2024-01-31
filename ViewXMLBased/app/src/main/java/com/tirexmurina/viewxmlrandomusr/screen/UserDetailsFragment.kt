@@ -5,56 +5,92 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import com.tirexmurina.viewxmlrandomusr.R
+import com.tirexmurina.viewxmlrandomusr.databinding.FragmentHomeBinding
+import com.tirexmurina.viewxmlrandomusr.databinding.FragmentUserDetailsBinding
+import com.tirexmurina.viewxmlrandomusr.domain.entity.User
+import com.tirexmurina.viewxmlrandomusr.presentation.HomeViewModel
+import com.tirexmurina.viewxmlrandomusr.presentation.HomeViewState
+import com.tirexmurina.viewxmlrandomusr.presentation.UserDetailsViewModel
+import com.tirexmurina.viewxmlrandomusr.presentation.UserViewState
+import com.tirexmurina.viewxmlrandomusr.utils.mainActivity
+import dagger.hilt.android.AndroidEntryPoint
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+@AndroidEntryPoint
+class UserDetailsFragment : BaseFragment<FragmentUserDetailsBinding>() {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [UserDetailsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class UserDetailsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private val viewModel : UserDetailsViewModel by viewModels()
+    private val args: UserDetailsFragmentArgs by navArgs()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    override fun inflateViewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentUserDetailsBinding {
+        return FragmentUserDetailsBinding.inflate(inflater, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.state.observe(viewLifecycleOwner, ::handleState)
+        loadData()
+    }
+
+    private fun loadData() {
+       viewModel.getUserById(args.userId)
+    }
+
+    private fun handleState(userViewState: UserViewState) {
+        when(userViewState){
+            UserViewState.Initial -> Unit
+            is UserViewState.Content -> showContent(userViewState.data)
+            is UserViewState.Error -> showError(userViewState.errorMsg)
+            is UserViewState.Loading -> showProgress()
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_details, container, false)
+    private fun showProgress() {
+
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment UserDetailsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            UserDetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun showError(errorMsg: String) {
+
     }
+
+    private fun showContent(user: User) {
+        with(binding){
+
+            Glide.with(userPhoto.context)
+                .load(user.picture.large)
+                .placeholder(R.drawable.recycler_view_placeholder)
+                .error(R.drawable.recycler_view_placeholder)
+                .into(userPhoto)
+            userTitle.text = user.name.title
+            userName.text = "${user.name.first} ${user.name.last}"
+            userGender.text = user.gender
+            userEmail.text = user.email
+            userCell.text = user.cell
+            userNat.text = user.nat
+            userCountry.text = user.location.country
+            userState.text = user.location.state
+            userCity.text = user.location.city
+            userStreetName.text = user.location.street.name
+            userStreetNum.text = user.location.street.number
+            userLat.text = user.location.coordinates.latitude
+            userLong.text= user.location.coordinates.longitude
+
+            userEmail.setOnClickListener{
+                mainActivity.emailPerson(user.email)
+            }
+            coordsContainer.setOnClickListener{
+                mainActivity.showMap(user.location.coordinates)
+            }
+            userCell.setOnClickListener {
+                mainActivity.dialPhoneNumber(user.cell)
+            }
+        }
+    }
+
 }
