@@ -12,9 +12,9 @@ import javax.inject.Inject
 class UsersRepositoryImpl @Inject constructor(
     private val dao: UserDao,
     private val dispatcher: CoroutineDispatcher,
-    private val service: UsersAPI
+    private val service: UsersAPI,
+    private val converter: UsersConverter
 ) : UsersRepository {
-    private val converter = UsersConverter()
 
     override suspend fun getUsers(): List<User>{
         return withContext(dispatcher){

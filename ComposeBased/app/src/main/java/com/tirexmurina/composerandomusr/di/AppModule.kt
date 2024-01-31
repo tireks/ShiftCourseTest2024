@@ -1,5 +1,6 @@
 package com.tirexmurina.composerandomusr.di
 
+import com.tirexmurina.composerandomusr.data.UsersConverter
 import com.tirexmurina.composerandomusr.data.remote.UsersAPI
 import com.tirexmurina.composerandomusr.domain.repository.UsersRepositoryImpl
 import com.tirexmurina.composerandomusr.domain.repository.UsersRepository
@@ -43,6 +44,12 @@ class AppModule {
     @Singleton
     fun provideDispatcher(): CoroutineDispatcher {
         return Dispatchers.IO
+    }
+
+    @Provides
+    @Singleton
+    fun provideConverter(): UsersConverter {
+        return UsersConverter()
     }
 
     @Module
