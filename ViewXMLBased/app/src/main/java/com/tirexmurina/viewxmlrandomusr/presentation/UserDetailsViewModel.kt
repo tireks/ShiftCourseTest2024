@@ -1,48 +1,30 @@
 package com.tirexmurina.viewxmlrandomusr.presentation
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tirexmurina.viewxmlrandomusr.domain.usecase.IClearDatabaseUseCase
-import com.tirexmurina.viewxmlrandomusr.domain.usecase.IGetUsersUseCase
+import com.tirexmurina.viewxmlrandomusr.domain.usecase.IGetUserByIdUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class UserDetailsViewModel @Inject constructor(
-    val getUsersUseCase: IGetUsersUseCase,
-    val clearDatabaseUseCase: IClearDatabaseUseCase
+    val useCase: IGetUserByIdUseCase
 ) : ViewModel() {
 
-    private val _state: MutableState<HomeViewState> = mutableStateOf(HomeViewState.Initial)
-    val state: State<HomeViewState> = _state
+    private val _state = MutableLiveData<UserViewState>(UserViewState.Initial)
+    val state: LiveData<UserViewState> = _state
 
-
-    init {
+    fun getUserById(id: String){
+        _state.value = UserViewState.Loading
         viewModelScope.launch {
-            _state.value = HomeViewState.Loading
-            getUsers()
-        }
-    }
-
-    private fun getUsers() {
-        viewModelScope.launch {
-            try {
-                val listUsers = getUsersUseCase()
-                _state.value = HomeViewState.Content(listUsers)
-            } catch (e: Exception) {
-                _state.value = HomeViewState.Error(e.message ?: "Unknown error")
-            }
-        }
-    }
-
-    fun clearDb(){
-        viewModelScope.launch{
-            try {
-                clearDatabaseUseCase()
-            } catch (e: Exception){
-                _state.value = HomeViewState.Error(e.message ?: "Unknown error")
+            try{
+                val user = useCase(id)
+                _state.value = UserViewState.Content(user)
+            }catch (e: Exception){
+                _state.value = UserViewState.Error(e.message ?: "Unknown error")
             }
         }
     }

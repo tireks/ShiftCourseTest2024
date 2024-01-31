@@ -98,7 +98,6 @@ fun UserDetailsScreenContent(
         Column (horizontalAlignment = Alignment.CenterHorizontally){
             Box(modifier = Modifier
                 .height(230.dp)
-                //.padding(16.dp)
                 .padding(top = 16.dp, bottom = 4.dp)
             ){
                 Image(
