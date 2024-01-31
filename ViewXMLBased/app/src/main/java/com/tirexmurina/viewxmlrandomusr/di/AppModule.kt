@@ -1,15 +1,15 @@
-package com.tirexmurina.composerandomusr.di
+package com.tirexmurina.viewxmlrandomusr.di
 
-import com.tirexmurina.composerandomusr.data.UsersConverter
-import com.tirexmurina.composerandomusr.data.remote.UsersAPI
-import com.tirexmurina.composerandomusr.domain.repository.UsersRepositoryImpl
-import com.tirexmurina.composerandomusr.domain.repository.UsersRepository
-import com.tirexmurina.composerandomusr.domain.usecase.ClearDatabaseUseCase
-import com.tirexmurina.composerandomusr.domain.usecase.GetUserByIdUseCase
-import com.tirexmurina.composerandomusr.domain.usecase.GetUsersUseCase
-import com.tirexmurina.composerandomusr.domain.usecase.IClearDatabaseUseCase
-import com.tirexmurina.composerandomusr.domain.usecase.IGetUserByIdUseCase
-import com.tirexmurina.composerandomusr.domain.usecase.IGetUsersUseCase
+import com.tirexmurina.viewxmlrandomusr.data.remote.UsersAPI
+import com.tirexmurina.viewxmlrandomusr.data.remote.UsersConverter
+import com.tirexmurina.viewxmlrandomusr.domain.repository.UsersRepository
+import com.tirexmurina.viewxmlrandomusr.domain.repository.UsersRepositoryImpl
+import com.tirexmurina.viewxmlrandomusr.domain.usecase.ClearDatabaseUseCase
+import com.tirexmurina.viewxmlrandomusr.domain.usecase.GetUserByIdUseCase
+import com.tirexmurina.viewxmlrandomusr.domain.usecase.GetUsersUseCase
+import com.tirexmurina.viewxmlrandomusr.domain.usecase.IClearDatabaseUseCase
+import com.tirexmurina.viewxmlrandomusr.domain.usecase.IGetUserByIdUseCase
+import com.tirexmurina.viewxmlrandomusr.domain.usecase.IGetUsersUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -48,7 +48,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideConverter(): UsersConverter {
+    fun provideConverter(): UsersConverter{
         return UsersConverter()
     }
 

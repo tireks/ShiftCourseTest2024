@@ -1,10 +1,9 @@
-package com.tirexmurina.composerandomusr.domain.repository
+package com.tirexmurina.viewxmlrandomusr.domain.repository
 
-import android.util.Log
-import com.tirexmurina.composerandomusr.data.UsersConverter
-import com.tirexmurina.composerandomusr.data.local.UserDao
-import com.tirexmurina.composerandomusr.data.remote.UsersAPI
-import com.tirexmurina.composerandomusr.domain.entity.User
+import com.tirexmurina.viewxmlrandomusr.data.local.UserDao
+import com.tirexmurina.viewxmlrandomusr.data.remote.UsersAPI
+import com.tirexmurina.viewxmlrandomusr.data.remote.UsersConverter
+import com.tirexmurina.viewxmlrandomusr.domain.entity.User
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -28,7 +27,7 @@ class UsersRepositoryImpl @Inject constructor(
             } catch (e: Exception){
                 dao.getUserFromDatabase()
             }
-        response
+            response
         }
     }
 
