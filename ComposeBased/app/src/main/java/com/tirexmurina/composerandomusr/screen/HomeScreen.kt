@@ -48,92 +48,26 @@ fun HomeScreen(
     onItemClick: (String) -> Unit,
     onRefreshClick: () -> Unit
 ){
-    /*val listOfUsers by remember { viewModel.listOfUsers }
-    Log.d("BL", "RECOMPOSED-HOME_SCREEN")
-    Log.d("BL","viewModel ${viewModel.hashCode().toHexString()}")
-
-    LazyVerticalGrid(columns = GridCells.Fixed(2)){
-        items(listOfUsers) { item ->
-            SingleUserItem(user = item, onClick = {
-                onItemClick(it)
-            })
-        }
-    }*/
-
-
-    Log.d("BL", "RECOMPOSED-HOME_SCREEN")
-    Log.d("BL","viewModel ${viewModel.hashCode().toHexString()}")
-
-    /*DisposableEffect(key1 = Unit){
-        Log.d("BL", "EXCEPTION")
-        viewModel.getUsers()
-        onDispose {}
-    }*/
-
-    //viewModel.getUsers()
 
     val viewState by remember { viewModel.state }
-    //val viewState by viewModel.state
     when(val bufState = viewState){
         is HomeViewState.Content -> {
-            /*Column {
-                LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-                    items(bufState.data) { item ->
-                        SingleUserItem(user = item, onClick = {
-                            onItemClick(it)
-                        })
-                    }
-                }
-                *//*SmallFloatingActionButton(
-                    onClick = { onClick() },
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    Icon(Icons.Filled.Add, "Small floating action button.")
-                }*//*
-            }*/
-
-            /*Scaffold (
-                floatingActionButton = {
-                    SmallFloatingActionButton(
-                        onClick = { onClick() },
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.secondary
-                    ) {
-                        Icon(Icons.Filled.Add, "Small floating action button.")
-                    }
-                }
-            ){
-                LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-                    items(bufState.data) { item ->
-                        SingleUserItem(user = item, it, onClick = {
-                            onItemClick(it)
-                        })
-                    }
-                }
-            }*/
-
             HomeScreenContent(
                 listUsers = bufState.data,
                 onItemClick = { onItemClick(it) },
                 onRefreshClick = {
-                    viewModel.clearDb() // todo хз, может есть способ лучше, пока напрямую дергается вьюмоделька
+                    viewModel.clearDb() //  хз, может есть способ лучше, пока напрямую дергается вьюмоделька
                     onRefreshClick()
                 }
             )
         }
 
-
-
-
         is HomeViewState.Error -> {
                 Text(text = "Success ${bufState.errorMsg}")
-            // todo хз, тестил отключая инет, еррор не переходит -upd. при кривом запросе выдает ошибку
         }
 
         is HomeViewState.Loading -> {
             Text(text = "Loading")
-            //todo тут ченить сделать
         }
 
         else -> {
@@ -155,7 +89,6 @@ fun HomeScreenContent(
             SmallFloatingActionButton(
                 onClick = {
                     onRefreshClick()
-                    Log.d("BK", "Clearing Table")
                 },
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.secondary
@@ -178,25 +111,17 @@ fun HomeScreenContent(
 @Composable
 fun SingleUserItem(
     user: User,
-    paddingValues: PaddingValues,
+    paddingValues: PaddingValues, //по-хорошему надо было через это паддинги настроить, но они уже были готовы, поэтому проигнорил
     onItemClick: (String) -> Unit
 ){
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .clickable { onItemClick(user.id) } // todo пока просто заглушка, передает вверх сид
+            .clickable { onItemClick(user.id) }
             .fillMaxWidth(), elevation = CardDefaults.cardElevation(
             defaultElevation = 10.dp
         )
     ) {
-        /*Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                modifier = Modifier.size(80.dp), painter = rememberAsyncImagePainter(
-                    category.strCategoryThumb
-                ), contentDescription = null
-            )
-            Text(text = category.strCategory, fontSize = 24.sp)
-        }*/
         Column() {
             Box(modifier = Modifier.height(230.dp)) {
                 Image(
@@ -213,14 +138,15 @@ fun SingleUserItem(
                 .fillMaxWidth()
                 .padding(16.dp)
             ){
-                /*Column {
-                    Text(text = user.name.title, fontSize = 18.sp, fontWeight = Medium, fontStyle = Italic)
-                    Text(text = user.name.first, fontSize = 24.sp, fontWeight = Bold)
-                    Text(text = user.name.last, fontSize = 24.sp, fontWeight = Bold)
-                }*/
                 Column {
-                    Text(text = user.id.substringAfter("|||"), fontSize = 18.sp, fontWeight = Medium, fontStyle = Italic)
-                    Text(text = user.id.substringBefore("|||"), fontSize = 24.sp, fontWeight = Bold)
+                    Text(
+                        text = user.id.substringAfter("|||"),
+                        fontSize = 18.sp, fontWeight = Medium, fontStyle = Italic
+                    )
+                    Text(
+                        text = user.id.substringBefore("|||"),
+                        fontSize = 24.sp, fontWeight = Bold
+                    )
                 }
             }
         }

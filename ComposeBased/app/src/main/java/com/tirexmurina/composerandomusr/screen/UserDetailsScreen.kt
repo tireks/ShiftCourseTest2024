@@ -2,6 +2,7 @@ package com.tirexmurina.composerandomusr.screen
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -12,23 +13,31 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import com.tirexmurina.composerandomusr.R
 import com.tirexmurina.composerandomusr.data.Coordinates
 import com.tirexmurina.composerandomusr.data.Location
 import com.tirexmurina.composerandomusr.data.Name
@@ -46,10 +55,7 @@ fun UserDetailsScreen(
     id : String?
 ) {
 
-    Log.d("BL", "RECOMPOSED-USER_SCREEN")
-    Log.d("BL","viewModel ${viewModel.hashCode().toHexString()}")
-
-    DisposableEffect(key1 = Unit){//todo мб его отсюда тоже убрать
+    DisposableEffect(key1 = Unit){
         if(!id.isNullOrBlank()){
             viewModel.getUserById(id)
         }
@@ -64,7 +70,6 @@ fun UserDetailsScreen(
 
         is UserViewState.Content -> {
             val context = LocalContext.current
-            //val phoneNumber = ""
             UserDetailsScreenContent(
                 user = bufState.data,
                 onCoordinatesClick = { showMap(context, bufState.data.location.coordinates) },
@@ -90,183 +95,124 @@ fun UserDetailsScreenContent(
     onEmailClick: () -> Unit
 ){
     Column {
-        Box(modifier = Modifier
-            .height(230.dp)
-            //.padding(16.dp)
-            .padding(top = 16.dp, bottom = 4.dp)
-        ){
-            Image(
-                painter = rememberAsyncImagePainter(
-                    user.picture.large
-                ),
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-        Text (
-            text = user.name.title,
-            //text = user.id.substringAfter("|||"),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(bottom = 4.dp, top = 4.dp),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium,
-            fontStyle = FontStyle.Italic
-        )
-        Text (
-            text = user.name.first + " " + user.name.last,
-            //text = user.id.substringBefore("|||"),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(bottom = 4.dp, top = 4.dp),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text (
-            text = user.gender,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(bottom = 4.dp, top = 4.dp),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium,
-            fontStyle = FontStyle.Italic
-        )
-        Text (
-            text = "Email:",
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Normal,
-            fontStyle = FontStyle.Italic
-        )
-        Text (
-            text = user.email,
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp)
-                .clickable { onEmailClick() },
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text (
-            text = "Cell:",
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Normal,
-            fontStyle = FontStyle.Italic
-        )
-        Text (
-            text = user.cell,
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp)
-                .clickable { onDialerClick() },
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text (
-            text = "Nationality:",
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Normal,
-            fontStyle = FontStyle.Italic
-        )
-        Text (
-            text = user.nat,
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text (
-            text = "Location:",
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Normal,
-            fontStyle = FontStyle.Italic
-        )
-        Text (
-            text = user.location.country,
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text (
-            text = user.location.state,
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text (
-            text = user.location.city,
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text (
-            text = user.location.street.name,
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text (
-            text = user.location.street.number,
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Normal,
-            fontStyle = FontStyle.Italic
-        )
-        Row(
-            modifier = Modifier.clickable { onCoordinatesClick() }
-        ){
-            Column(modifier = Modifier
-                .padding(start = 16.dp)
-            ) {
-                Text (
-                    text = "Latitude:",
-                    modifier = Modifier
-                        .padding(bottom = 4.dp, top = 4.dp),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontStyle = FontStyle.Italic
-                )
-                Text (
-                    text = user.location.coordinates.latitude,
-                    modifier = Modifier
-                        .padding(bottom = 4.dp, top = 4.dp),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold
+        Column (horizontalAlignment = Alignment.CenterHorizontally){
+            Box(modifier = Modifier
+                .height(230.dp)
+                //.padding(16.dp)
+                .padding(top = 16.dp, bottom = 4.dp)
+            ){
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        user.picture.large
+                    ),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillHeight,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
-            Column(modifier = Modifier
-                .padding(start = 32.dp)
-            ) {
-                Text (
-                    text = "Longitude:",
-                    modifier = Modifier
-                        .padding(bottom = 4.dp, top = 4.dp),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontStyle = FontStyle.Italic
-                )
-                Text (
-                    text = user.location.coordinates.longitude,
-                    modifier = Modifier
-                        .padding(bottom = 4.dp, top = 4.dp),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold
+            LabelTextHeader(text = user.name.title)
+            ContentTextHeader(text = "${user.name.first} ${user.name.last}")
+            LabelTextHeader(text = user.gender)
+        }
+        Column {
+            LabelTextBody(text = "Email:")
+            Row(modifier = Modifier.clickable { onEmailClick() }){
+                ContentTextBody(text = user.email)
+                Icon(painter = painterResource(id = R.drawable.baseline_touch_app_24),
+                    contentDescription ="Small floating action button.")
+            }
+            LabelTextBody(text = "Cell:")
+            Row(modifier = Modifier.clickable { onDialerClick() }){
+                ContentTextBody(text = user.cell)
+                Icon(painter = painterResource(id = R.drawable.baseline_touch_app_24),
+                    contentDescription ="Small floating action button.")
+            }
+            LabelTextBody(text = "Nationality:")
+            ContentTextBody(text = user.nat)
+            LabelTextBody(text = "Location:")
+            ContentTextBody(text = user.location.country)
+            ContentTextBody(text = user.location.state,)
+            ContentTextBody(text = user.location.city)
+            Row {
+                ContentTextBody(text = user.location.street.name)
+                ContentTextBody(text = user.location.street.number)
+            }
+            Row(
+                modifier = Modifier.clickable { onCoordinatesClick() }
+            ){
+                Column(modifier = Modifier
+                ) {
+                    LabelTextBody(text = "Latitude:")
+                    ContentTextBody(text = user.location.coordinates.latitude)
+                }
+                Column(modifier = Modifier
+                    .padding(start = 32.dp)
+                ) {
+                    LabelTextBody(text = "Longitude:")
+                    ContentTextBody(text = user.location.coordinates.longitude)
+                }
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_touch_app_24),
+                    contentDescription ="Small floating action button.",
+                    modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
         }
     }
+
 }
+
+@Composable
+fun LabelTextHeader(text : String){
+    Text (
+        text = text,
+        modifier = Modifier
+            .padding(bottom = 4.dp, top = 4.dp),
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Medium,
+        fontStyle = FontStyle.Italic
+    )
+}
+
+@Composable
+fun ContentTextHeader(text : String){
+    Text (
+        text = text,
+        modifier = Modifier
+            .padding(bottom = 4.dp, top = 4.dp),
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
+fun LabelTextBody(text : String){
+    Text (
+        text = text,
+        modifier = Modifier
+            .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Normal,
+        fontStyle = FontStyle.Italic
+    )
+}
+
+@Composable
+fun ContentTextBody(text : String){
+    Text (
+        text = text,
+        modifier = Modifier
+            .padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold
+    )
+}
+
+// далее идут функции отправляющие в сторонние приложения, я не знал, где лучше это сделать.
+// Вроде, это делается на уровне представления, значит либо в View, либо в ViewModel,
+// но мне не хотелось передавть контекст, даже контекст приложения, в ViewModel,
+// насколько я понимаю - это не очень хорошая практика,
+
 
 fun showMap(context: Context, geoCoordinates: Coordinates) {
     val geoLocation =
@@ -298,6 +244,8 @@ fun emailPerson(context: Context, email: String) {
         startActivity(context, emailIntent, null)
     }
 }
+
+
 
 
 
