@@ -33,9 +33,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    //Greeting("Android")
                     RandomUsrApp()
-                    Log.d("BL", "CALLING-APP")
                 }
             }
         }
@@ -45,7 +43,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun RandomUsrApp(){
-    //HomeScreen()
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "users"){
         composable("users") {
@@ -53,7 +50,6 @@ fun RandomUsrApp(){
                 onItemClick = { userId -> navController.navigate("user/${userId}") },
                 onRefreshClick = { navController.navigate("users")}
             )
-            Log.d("BL", "CALLING-HOME-SCREEn")
         }
 
         composable("user/{userId}", arguments = listOf(navArgument("userId"){
@@ -63,21 +59,8 @@ fun RandomUsrApp(){
             val userId = remember {
                 it.arguments?.getString("userId")
             }
-            //val userId = it.arguments?.getString("userId")
             Log.d("BL", "CALLING-USER-SCREEn")
             UserDetailsScreen(id = userId)
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    /*ComposeRandomUsrTheme {
-        Greeting("Android")
-    }*/
-}
-
-//todo новый экран и навигация на него
-
-// todo решить как получать пользователя и сделать его получение при загрузке второго скрина

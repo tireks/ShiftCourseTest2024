@@ -6,7 +6,6 @@ interface UsersRepository {
 
     suspend fun getUsers() : List<User>
 
-    //suspend fun getUsers
     suspend fun getUserById(id : String) : User
 
     suspend fun clearDatabase()

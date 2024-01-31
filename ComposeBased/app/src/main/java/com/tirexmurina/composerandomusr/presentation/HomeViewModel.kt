@@ -19,24 +19,16 @@ class HomeViewModel @Inject constructor(
     val clearDatabaseUseCase: IClearDatabaseUseCase
 ) : ViewModel() {
 
-    /*private val _listOfUsers: MutableState<List<User>> = mutableStateOf(emptyList())
-    val listOfUsers: State<List<User>> = _listOfUsers*/
     private val _state: MutableState<HomeViewState> = mutableStateOf(HomeViewState.Initial)
     val state: State<HomeViewState> = _state
 
 
     init {
-        Log.d("BL", "init goes brrrrrrrrr")
         viewModelScope.launch {
             _state.value = HomeViewState.Loading
             getUsers()
-            /*val usersList = getUsersUseCase()
-            _state.value = usersList*/
         }
     }
-
-    /*private val _state: MutableState<HomeViewState> = mutableStateOf(HomeViewState.Initial)
-    val state: State<HomeViewState> = _state*/
 
     private fun getUsers() {
         viewModelScope.launch {
@@ -44,7 +36,6 @@ class HomeViewModel @Inject constructor(
                 val listUsers = getUsersUseCase()
                 _state.value = HomeViewState.Content(listUsers)
             } catch (e: Exception) {
-                Log.d("BL", "EXCEPTION ${e.message}")
                 _state.value = HomeViewState.Error(e.message ?: "Unknown error")
             }
         }
@@ -55,7 +46,6 @@ class HomeViewModel @Inject constructor(
             try {
                 clearDatabaseUseCase()
             } catch (e: Exception){
-                Log.d("BL", "EXCEPTION ${e.message}")
                 _state.value = HomeViewState.Error(e.message ?: "Unknown error")
             }
         }

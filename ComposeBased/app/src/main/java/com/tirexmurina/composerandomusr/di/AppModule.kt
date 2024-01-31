@@ -28,8 +28,7 @@ class AppModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://randomuser.me/")  //not sure that it should be there. Maybe in repositoryImplementation?
-            //.addConverterFactory(ScalarsConverterFactory.create())
+            .baseUrl("https://randomuser.me/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
